@@ -8,8 +8,8 @@ from PIL import ImageFile
 from tqdm import tqdm
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-content_path = './city.jpg'
-style_path = './stary_night.jpg'
+content_path = './images/city.jpg'
+style_path = './images/stary_night.jpg'
 
 def load_img(path_to_img):
   max_dim = 512
@@ -17,7 +17,7 @@ def load_img(path_to_img):
   img = img.convert('RGB')
   long = max(img.size)
   scale = max_dim/long
-  img = img.resize((round(img.size[0]*scale), round(img.size[1]*scale)), Image.ANTIALIAS)
+  img = img.resize((round(img.size[0]*scale), round(img.size[1]*scale)), Image.Resampling.LANCZOS)
   
   img = kp_image.img_to_array(img)
   
@@ -183,7 +183,7 @@ def run_style_transfer(content_path,
   init_image = load_and_process_img(content_path)
   init_image = tf.Variable(init_image, dtype=tf.float32)
   # Create our optimizer
-  opt = keras.optimizers.Adam(learning_rate=5)
+  opt = keras.optimizers.Adam(learning_rate=5.0)
 
   # For displaying intermediate images 
   iter_count = 1
@@ -251,4 +251,8 @@ def run_style_transfer(content_path,
       
   return best_img, best_loss
 
-best, best_loss = run_style_transfer(content_path, style_path, num_iterations=1000)
+best, best_loss = run_style_transfer(content_path, style_path, num_iterations=150)
+
+from PIL import Image
+
+Image.fromarray(best).save("output.jpg")
